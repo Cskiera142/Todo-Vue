@@ -1,10 +1,9 @@
-<script setup></script>
-
 <template>
-  <header>
-    <div class="wrapper">
-      <nav></nav>
-    </div>
-  </header>
-  <RouterView />
+  <router-view />
 </template>
+
+<script>
+import '@/assets/main.css'
+
+export default {}
+</script>

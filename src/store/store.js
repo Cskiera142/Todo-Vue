@@ -11,7 +11,6 @@ export default createStore({
   mutations: {
     ADD_TASK(state, task) {
       state.tasks.push(task)
-      // console.log(task)
     },
     REMOVE_TASK(state, task) {
       state.tasks = state.tasks.filter((t) => t !== task)
@@ -34,6 +33,7 @@ export default createStore({
       if (state.inputContent.trim() === '' || state.inputCategory === null) {
         return
       }
+
       const newTask = {
         title: state.inputTitle,
         content: state.inputContent,
@@ -47,6 +47,10 @@ export default createStore({
       commit('SET_INPUT_TITLE', '')
       commit('SET_INPUT_CONTENT', '')
       commit('SET_INPUT_CATEGORY', null)
+    },
+    removeTask({ commit }, task) {
+      commit('REMOVE_TASK', task)
+      console.log('delete')
     }
   },
   getters: {
@@ -54,20 +58,16 @@ export default createStore({
       const tasks = [...state.tasks]
 
       if (state.sortingOptions === 'created_at') {
-        // Sort tasks by createdAt in descending order (most recent first)
         tasks.sort((a, b) => b.createdAt - a.createdAt)
       } else if (state.sortingOptions === 'priority') {
-        // Sort tasks by priority (high, medium, low)
-        tasks.sort((a, b) => {
-          const priorityOrder = {
-            high: 1,
-            medium: 2,
-            low: 3
-          }
-          return priorityOrder[a.category] - priorityOrder[b.category]
-        })
+        const priorityOrder = {
+          high: 1,
+          medium: 2,
+          low: 3
+        }
+        tasks.sort((a, b) => priorityOrder[a.category] - priorityOrder[b.category])
       }
-      console.log('Sorted tasks:', tasks)
+
       return tasks
     }
   }

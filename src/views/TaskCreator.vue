@@ -1,142 +1,26 @@
+<template>
+  <section class="greeting">
+    <h2 class="title">Welcome Back</h2>
+  </section>
+
+  <!-- Task Form Component -->
+  <TaskForm />
+
+  <!-- Task List Component -->
+  <TaskList />
+
+  <!-- Router View for Additional Routes -->
+  <router-view />
+</template>
 <script>
 import '@/assets/main.css'
+import TaskForm from '../components/TaskForm.vue'
+import TaskList from '../components/TaskList.vue'
 
 export default {
-  computed: {
-    inputTitle: {
-      get() {
-        return this.$store.state.inputTitle
-      },
-      set(value) {
-        this.$store.commit('SET_INPUT_TITLE', value)
-      }
-    },
-    inputContent: {
-      get() {
-        return this.$store.state.inputContent
-      },
-      set(value) {
-        this.$store.commit('SET_INPUT_CONTENT', value)
-      }
-    },
-    inputCategory: {
-      get() {
-        return this.$store.state.inputCategory
-      },
-      set(value) {
-        this.$store.commit('SET_INPUT_CATEGORY', value)
-      }
-    }
-  },
-  methods: {
-    addTask() {
-      this.$store.dispatch('addTask')
-    },
-    removeTask(task) {
-      this.$store.commit('REMOVE_TASK', task)
-    },
-    changeSortingOption() {
-      this.$store.commit('SET_SORTING_OPTION', this.sortingTasks)
-    }
+  components: {
+    TaskForm,
+    TaskList
   }
 }
 </script>
-
-<template>
-  <main class="app">
-    <section class="greeting">
-      <h2 class="title">Welcome Back</h2>
-    </section>
-
-    <!-- Task Section -->
-    <section class="create-task">
-      <h3>CREATE A TASK</h3>
-
-      <form id="new-task-form" @submit.prevent="addTask">
-        <h4>What's on your task list?</h4>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          placeholder="Title of task"
-          maxlength="50"
-          v-model="inputTitle"
-        />
-        <input
-          type="text"
-          name="content"
-          id="content"
-          placeholder="e.g. code todo app"
-          maxlength="101"
-          v-model="inputContent"
-        />
-
-        <!-- Priority Selector -->
-        <h4>Priority</h4>
-        <div class="options">
-          <label>
-            <input type="radio" name="category" value="high" v-model="inputCategory" />
-            <span class="bubble high"></span>
-            <div>High</div>
-          </label>
-
-          <label>
-            <input type="radio" name="category" value="medium" v-model="inputCategory" />
-            <span class="bubble medium"></span>
-            <div>Medium</div>
-          </label>
-
-          <label>
-            <input type="radio" name="category" value="low" v-model="inputCategory" />
-            <span class="bubble low"></span>
-            <div>Low</div>
-          </label>
-        </div>
-        <!-- Dropdown to select sorting option -->
-        <input type="submit" value="Add task" />
-      </form>
-
-      <div>
-        <label class="sort" for="sort-select">Sort by:</label>
-        <select id="sort-select" v-model="sortingTasks" @change="changeSortingOption">
-          <option value="created_at">Most Recent</option>
-          <option value="priority">Priority</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- New Task Handler -->
-
-    <section class="task-list">
-      <h3>TASK LIST</h3>
-      <div class="list" id="task-list">
-        <div
-          :key="i"
-          v-for="(task, i) in $store.getters.sortedTasks"
-          :class="`task-item ${task.done && 'done'}`"
-        >
-          <label>
-            <input type="checkbox" v-model="task.done" />
-            <span
-              :class="`bubble ${
-                task.category === 'high' ? 'high' : task.category === 'medium' ? 'medium' : 'low'
-              }`"
-            ></span>
-          </label>
-          <div class="task-content">
-            <div>
-              <div class="inputContent" value="inputContent"></div>
-            </div>
-            <input type="text" v-model="task.title" style="width: 20rem" maxlength="50" />
-
-            <input type="text" v-model="task.content" style="width: 60rem" maxlength="101" />
-          </div>
-          <div class="actions">
-            <button class="delete" @click="removeTask(task)">Delete</button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-  <RouterView />
-</template>
