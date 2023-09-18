@@ -1,33 +1,29 @@
 <template>
-  <div :class="['task-item', { done: task.done }]">
+  <div class="task-item">
+    <!-- Render task title and content -->
+
     <label>
       <input type="checkbox" v-model="task.done" />
       <span
-        :class="{
-          bubble: true,
-          high: task.category === 'high',
-          medium: task.category === 'medium',
-          low: task.category === 'low'
-        }"
+        :class="`bubble ${
+          task.category === 'high' ? 'high' : task.category === 'medium' ? 'medium' : 'low'
+        }`"
       ></span>
     </label>
     <div class="task-content">
-      <div>
-        <div class="inputContent" value="inputContent"></div>
-      </div>
       <input
         type="text"
         :value="task.title"
         @input="updateTaskTitle"
-        style="width: 20rem"
-        maxlength="50"
+        style="width: 100%"
+        maxlength="30"
       />
       <input
         type="text"
         :value="task.content"
         @input="updateTaskContent"
-        style="width: 60rem"
-        maxlength="101"
+        style="width: 100%"
+        maxlength="100"
       />
     </div>
     <div class="actions">
