@@ -59,6 +59,7 @@ export default {
           name="title"
           id="title"
           placeholder="Title of task"
+          maxlength="50"
           v-model="inputTitle"
         />
         <input
@@ -66,6 +67,7 @@ export default {
           name="content"
           id="content"
           placeholder="e.g. code todo app"
+          maxlength="101"
           v-model="inputContent"
         />
 
@@ -125,9 +127,9 @@ export default {
             <div>
               <div class="inputContent" value="inputContent"></div>
             </div>
-            <input type="text" v-model="task.title" />
+            <input type="text" v-model="task.title" style="width: 20rem" maxlength="50" />
 
-            <input type="text" v-model="task.content" />
+            <input type="text" v-model="task.content" style="width: 60rem" maxlength="101" />
           </div>
           <div class="actions">
             <button class="delete" @click="removeTask(task)">Delete</button>

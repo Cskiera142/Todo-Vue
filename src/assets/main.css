@@ -265,3 +265,8 @@ input:checked ~ .bubble::after {
   text-decoration: line-through;
   color: var(--grey);
 }
+
+.contentWidth {
+  background-color: #2e2e54;
+  color: white;
+}

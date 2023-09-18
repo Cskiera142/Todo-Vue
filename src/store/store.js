@@ -34,7 +34,6 @@ export default createStore({
       if (state.inputContent.trim() === '' || state.inputCategory === null) {
         return
       }
-
       const newTask = {
         title: state.inputTitle,
         content: state.inputContent,
