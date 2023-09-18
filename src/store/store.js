@@ -25,8 +25,8 @@ export default createStore({
     SET_INPUT_CATEGORY(state, category) {
       state.inputCategory = category
     },
-    SET_SORTING_OPTION(state, category) {
-      state.sortingOptions = category
+    SET_SORTING_OPTION(state, sortingOption) {
+      state.sortingOptions = sortingOption
     }
   },
   actions: {
@@ -48,22 +48,28 @@ export default createStore({
       commit('SET_INPUT_TITLE', '')
       commit('SET_INPUT_CONTENT', '')
       commit('SET_INPUT_CATEGORY', null)
-      commit('SET_SORTING_OPTION', null)
     }
   },
   getters: {
     sortedTasks(state) {
+      const tasks = [...state.tasks]
+
       if (state.sortingOptions === 'created_at') {
-        // Sort by createdAt timestamp
-        return state.tasks.slice().sort((a, b) => a.createdAt - b.createdAt)
+        // Sort tasks by createdAt in descending order (most recent first)
+        tasks.sort((a, b) => b.createdAt - a.createdAt)
       } else if (state.sortingOptions === 'priority') {
-        // Sort by priority (high > medium > low)
-        const priorityOrder = { high: 1, medium: 2, low: 3 }
-        return state.tasks.slice().sort((a, b) => {
+        // Sort tasks by priority (high, medium, low)
+        tasks.sort((a, b) => {
+          const priorityOrder = {
+            high: 1,
+            medium: 2,
+            low: 3
+          }
           return priorityOrder[a.category] - priorityOrder[b.category]
         })
       }
-      return state.tasks.slice()
+      console.log('Sorted tasks:', tasks)
+      return tasks
     }
   }
 })

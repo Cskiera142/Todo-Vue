@@ -1,7 +1,5 @@
 <script>
 import '@/assets/main.css'
-import { computed } from 'vue'
-import { useStore } from 'vuex'
 
 export default {
   computed: {
@@ -28,14 +26,6 @@ export default {
       set(value) {
         this.$store.commit('SET_INPUT_CATEGORY', value)
       }
-    },
-    sortingOptions: {
-      get() {
-        return this.$store.state.sortingOptions
-      },
-      set(value) {
-        this.$store.commit('SET_SORTING_OPTION', value)
-      }
     }
   },
   methods: {
@@ -45,8 +35,8 @@ export default {
     removeTask(task) {
       this.$store.commit('REMOVE_TASK', task)
     },
-    updateSortingOption() {
-      this.$store.commit('SET_SORTING_OPTION', this.sortingOptions)
+    changeSortingOption() {
+      this.$store.commit('SET_SORTING_OPTION', this.sortingTasks)
     }
   }
 }
@@ -106,7 +96,7 @@ export default {
 
       <div>
         <label class="sort" for="sort-select">Sort by:</label>
-        <select id="sort-select" v-model="sortingOptions">
+        <select id="sort-select" v-model="sortingTasks" @change="changeSortingOption">
           <option value="created_at">Most Recent</option>
           <option value="priority">Priority</option>
         </select>
@@ -120,7 +110,7 @@ export default {
       <div class="list" id="task-list">
         <div
           :key="i"
-          v-for="(task, i) in $store.state.tasks"
+          v-for="(task, i) in $store.getters.sortedTasks"
           :class="`task-item ${task.done && 'done'}`"
         >
           <label>
