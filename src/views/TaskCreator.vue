@@ -1,60 +1,52 @@
 <script>
-import { ref, computed, watch } from 'vue'
-import { useStore } from 'vuex'
 import '@/assets/main.css'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
-  name: 'TaskCreator',
-  setup() {
-    const store = useStore()
-    const tasks = ref('')
-    const userName = ref('')
-    const input_content = ref('')
-    const input_category = ref(null)
-    const sortingOptions = ref('created_at')
-
-    const tasksSorted = computed(() => {
-      if (sortingOptions.value === 'created_at') {
-        // Sort by createdAt timestamp
-        return tasks.value.slice().sort((a, b) => b.createdAt - a.createdAt)
-      } else if (sortingOptions.value === 'priority') {
-        // Sort by priority (high > medium > low)
-        return tasks.value.slice().sort((a, b) => {
-          const priorityOrder = { high: 1, medium: 2, low: 3 }
-          return priorityOrder[a.category] - priorityOrder[b.category]
-        })
+  computed: {
+    inputTitle: {
+      get() {
+        return this.$store.state.inputTitle
+      },
+      set(value) {
+        this.$store.commit('SET_INPUT_TITLE', value)
       }
-      return tasks.value.slice()
-    })
-
-    watch(userName, (newVal) => {
-      localStorage.setItem('name', newVal)
-    })
-
-    const addTask = () => {
-      if (input_content.value.trim() === '' || input_category.value === null) {
-        return
+    },
+    inputContent: {
+      get() {
+        return this.$store.state.inputContent
+      },
+      set(value) {
+        this.$store.commit('SET_INPUT_CONTENT', value)
       }
-
-      const newTask = {
-        content: input_content.value,
-        category: input_category.value,
-        done: false,
-        createdBy: userName.value,
-        createdAt: new Date().getTime()
+    },
+    inputCategory: {
+      get() {
+        return this.$store.state.inputCategory
+      },
+      set(value) {
+        this.$store.commit('SET_INPUT_CATEGORY', value)
       }
-      store.dispatch('addTask', newTask)
-
-      input_content.value = ''
-      input_category.value = null
+    },
+    sortingOptions: {
+      get() {
+        return this.$store.state.sortingOptions
+      },
+      set(value) {
+        this.$store.commit('SET_SORTING_OPTION', value)
+      }
     }
-
-    return {
-      userName,
-      input_content,
-      input_category,
-      sortingOptions,
-      tasksSorted
+  },
+  methods: {
+    addTask() {
+      this.$store.dispatch('addTask')
+    },
+    removeTask(task) {
+      this.$store.commit('REMOVE_TASK', task)
+    },
+    updateSortingOption() {
+      this.$store.commit('SET_SORTING_OPTION', this.sortingOptions)
     }
   }
 }
@@ -63,11 +55,10 @@ export default {
 <template>
   <main class="app">
     <section class="greeting">
-      <h2 class="title">
-        Hello, <input type="text" id="name" placeholder="Name here" v-model="userName" />
-      </h2>
+      <h2 class="title">Welcome Back</h2>
     </section>
 
+    <!-- Task Section -->
     <section class="create-task">
       <h3>CREATE A TASK</h3>
 
@@ -75,46 +66,36 @@ export default {
         <h4>What's on your task list?</h4>
         <input
           type="text"
+          name="title"
+          id="title"
+          placeholder="Title of task"
+          v-model="inputTitle"
+        />
+        <input
+          type="text"
           name="content"
           id="content"
           placeholder="e.g. code todo app"
-          v-model="input_content"
+          v-model="inputContent"
         />
 
+        <!-- Priority Selector -->
         <h4>Priority</h4>
         <div class="options">
           <label>
-            <input
-              type="radio"
-              name="category"
-              id="category1"
-              value="high"
-              v-model="input_category"
-            />
+            <input type="radio" name="category" value="high" v-model="inputCategory" />
             <span class="bubble high"></span>
             <div>High</div>
           </label>
 
           <label>
-            <input
-              type="radio"
-              name="category"
-              id="category1"
-              value="medium"
-              v-model="input_category"
-            />
+            <input type="radio" name="category" value="medium" v-model="inputCategory" />
             <span class="bubble medium"></span>
             <div>Medium</div>
           </label>
 
           <label>
-            <input
-              type="radio"
-              name="category"
-              id="category2"
-              value="low"
-              v-model="input_category"
-            />
+            <input type="radio" name="category" value="low" v-model="inputCategory" />
             <span class="bubble low"></span>
             <div>Low</div>
           </label>
@@ -132,10 +113,16 @@ export default {
       </div>
     </section>
 
+    <!-- New Task Handler -->
+
     <section class="task-list">
       <h3>TASK LIST</h3>
       <div class="list" id="task-list">
-        <div :key="task" v-for="task in tasks" :class="`task-item ${task.done && 'done'}`">
+        <div
+          :key="i"
+          v-for="(task, i) in $store.state.tasks"
+          :class="`task-item ${task.done && 'done'}`"
+        >
           <label>
             <input type="checkbox" v-model="task.done" />
             <span
@@ -144,12 +131,14 @@ export default {
               }`"
             ></span>
           </label>
-
           <div class="task-content">
-            <div></div>
+            <div>
+              <div class="inputContent" value="inputContent"></div>
+            </div>
+            <input type="text" v-model="task.title" />
+
             <input type="text" v-model="task.content" />
           </div>
-
           <div class="actions">
             <button class="delete" @click="removeTask(task)">Delete</button>
           </div>

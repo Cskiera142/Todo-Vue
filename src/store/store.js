@@ -2,26 +2,31 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    userName: '',
     tasks: [],
+    inputTitle: '',
     inputContent: '',
-    inputCategory: null
+    inputCategory: null,
+    sortingOptions: 'created_at'
   },
   mutations: {
-    SET_NAME(state, newName) {
-      state.userName = newName // Corrected state property name
-    },
     ADD_TASK(state, task) {
       state.tasks.push(task)
+      // console.log(task)
     },
-    REMOVE_Task(state, task) {
+    REMOVE_TASK(state, task) {
       state.tasks = state.tasks.filter((t) => t !== task)
+    },
+    SET_INPUT_TITLE(state, title) {
+      state.inputTitle = title
     },
     SET_INPUT_CONTENT(state, content) {
       state.inputContent = content
     },
     SET_INPUT_CATEGORY(state, category) {
       state.inputCategory = category
+    },
+    SET_SORTING_OPTION(state, category) {
+      state.sortingOptions = category
     }
   },
   actions: {
@@ -31,6 +36,7 @@ export default createStore({
       }
 
       const newTask = {
+        title: state.inputTitle,
         content: state.inputContent,
         category: state.inputCategory,
         done: false,
@@ -39,13 +45,25 @@ export default createStore({
       }
 
       commit('ADD_TASK', newTask)
+      commit('SET_INPUT_TITLE', '')
       commit('SET_INPUT_CONTENT', '')
       commit('SET_INPUT_CATEGORY', null)
+      commit('SET_SORTING_OPTION', null)
     }
   },
   getters: {
     sortedTasks(state) {
-      return state.tasks.slice().sort((a, b) => a.createdAt - b.createdAt)
+      if (state.sortingOptions === 'created_at') {
+        // Sort by createdAt timestamp
+        return state.tasks.slice().sort((a, b) => a.createdAt - b.createdAt)
+      } else if (state.sortingOptions === 'priority') {
+        // Sort by priority (high > medium > low)
+        const priorityOrder = { high: 1, medium: 2, low: 3 }
+        return state.tasks.slice().sort((a, b) => {
+          return priorityOrder[a.category] - priorityOrder[b.category]
+        })
+      }
+      return state.tasks.slice()
     }
   }
 })
