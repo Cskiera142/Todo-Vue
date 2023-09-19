@@ -9,6 +9,13 @@ export default createStore({
     sortingOptions: 'created_at'
   },
   mutations: {
+    loadTasks({ commit }) {
+      const storedTasks = JSON.parse(localStorage.getItem('tasks')) || []
+      commit('SET_TASKS', storedTasks)
+    },
+    saveTasks({ state }) {
+      localStorage.setItem('tasks', JSON.stringify(state.tasks))
+    },
     ADD_TASK(state, task) {
       state.tasks.push(task)
     },
@@ -26,14 +33,22 @@ export default createStore({
     },
     SET_SORTING_OPTION(state, sortingOption) {
       state.sortingOptions = sortingOption
+    },
+    // Define the SET_TASKS mutation
+    SET_TASKS(state, tasks) {
+      state.tasks = tasks
     }
   },
   actions: {
+    loadTasks({ commit }) {
+      const storedTasks = JSON.parse(localStorage.getItem('tasks')) || []
+      commit('SET_TASKS', storedTasks)
+    },
+    saveTasks({ state }) {
+      localStorage.setItem('tasks', JSON.stringify(state.tasks))
+    },
     addTask({ commit, state }) {
-      if (state.inputContent.trim() === '' || state.inputCategory === null) {
-        return
-      }
-
+      // Create a new task object inside the action block
       const newTask = {
         title: state.inputTitle,
         content: state.inputContent,
@@ -47,6 +62,9 @@ export default createStore({
       commit('SET_INPUT_TITLE', '')
       commit('SET_INPUT_CONTENT', '')
       commit('SET_INPUT_CATEGORY', null)
+
+      // Save tasks to localStorage after adding a task
+      localStorage.setItem('tasks', JSON.stringify(state.tasks))
     },
     removeTask({ commit }, task) {
       commit('REMOVE_TASK', task)
